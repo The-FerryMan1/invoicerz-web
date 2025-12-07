@@ -27,6 +27,22 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/reset-password",
+    name: "reset-password",
+    component: () => import("@/pages/auth/resetPassword.vue"),
+    meta: {
+      title: "Reset password",
+    },
+  },
+  {
+    path: "/reset-form/:token",
+    name: "reset-form",
+    component: () => import("@/pages/auth/resetForm.vue"),
+    meta: {
+      title: "Reset form",
+    },
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: "notFound",
     component: () => import("@/error.vue"),
