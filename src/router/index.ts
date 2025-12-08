@@ -43,6 +43,14 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/verify-email",
+    name: "verify-email",
+    component: () => import("@/pages/auth/verifyEmail.vue"),
+    meta: {
+      title: "Verify email",
+    },
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: "notFound",
     component: () => import("@/error.vue"),
