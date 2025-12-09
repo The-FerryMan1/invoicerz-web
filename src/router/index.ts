@@ -1,3 +1,4 @@
+import { authClient } from "@/lib/auth-client";
 import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router";
 
 // route items
@@ -51,6 +52,24 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/dashboard",
+    name: "dashboard",
+    component: () => import("@/pages/protected/dashboard.vue"),
+    meta: {
+      title: "Dashboard",
+      isRequiresAuth: true,
+    },
+  },
+  {
+    path: "/invoices",
+    name: "invoices",
+    component: () => import("@/pages/protected/invoices.vue"),
+    meta: {
+      title: "Invoices",
+      isRequiresAuth: true,
+    },
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: "notFound",
     component: () => import("@/error.vue"),
@@ -64,6 +83,18 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   document.title = `Invoicerz | ${String(to.meta.title)}`;
+});
+
+router.beforeEach(async (to, from) => {
+  const session = await authClient.getSession();
+
+  if (!to.meta.isRequiresAuth && session.data?.session) {
+    return { name: "dashboard", query: { redirect: to.fullPath } };
+  }
+
+  if (to.meta.isRequiresAuth && !session.data?.session) {
+    return { name: "login" };
+  }
 });
 
 export default router;

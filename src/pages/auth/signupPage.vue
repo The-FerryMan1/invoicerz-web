@@ -123,14 +123,14 @@ onUnmounted(() => {
 
 <template>
     <DefaultLayout>
-        {{ isVerified }}
+
         <UModal v-model:open="isVerified" :dismissible="false">
             <template #content>
                 <UContainer>
                     <div class="p-5 flex flex-col justify-center items-center">
                         <h1 class="text-xl font-bold mb-5 text-center">Email verification sent.</h1>
                         <span class="my-3 text-green-500" v-if="countDown"> Verification Disabled: {{ countDown
-                        }}s</span>
+                            }}s</span>
                         <UButton icon="i-lucide-mail" @click="resendVerificationSumbit" :disabled="isDisabled">resend
                         </UButton>
                     </div>
@@ -140,7 +140,7 @@ onUnmounted(() => {
         </UModal>
         <div class="flex flex-col items-center justify-center gap-4 p-4">
             <UPageCard class="w-full max-w-md">
-                {{ isVerified }}
+
                 <UAuthForm :schema="schema" title="Account registration" icon="i-lucide-user" :fields="fields"
                     @submit="onSubmit">
                     <template #description>

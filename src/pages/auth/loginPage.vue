@@ -3,8 +3,9 @@ import * as z from 'zod'
 import type { FormSubmitEvent, AuthFormField } from '@nuxt/ui'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import { authClient } from '@/lib/auth-client'
+import { useRouter } from 'vue-router'
 
-
+const router = useRouter()
 const toast = useToast()
 const fields: AuthFormField[] = [{
     name: 'email',
@@ -42,6 +43,8 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
             },
             onSuccess(ctx) {
                 toast.add({ title: "Authentication Success", description: "Welcome back!", color: "success" })
+
+                router.push({ name: 'dashboard' })
             }
         }
     })
