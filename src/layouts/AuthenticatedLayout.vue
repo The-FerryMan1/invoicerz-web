@@ -21,8 +21,8 @@ const items = computed<NavigationMenuItem[]>(() => [
     {
         label: "Clients",
         icon: "i-lucide-user",
-        to: "#",
-        active: route.name === "1"
+        to: { name: 'clients' },
+        active: route.name === "clients"
     },
     {
         label: "Product/Services",
