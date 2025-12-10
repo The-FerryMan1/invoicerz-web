@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import dashboardWrapper from '@/components/dashboardWrapper.vue';
 import { useClientStore } from '@/stores/clients';
-import { onMounted, reactive } from 'vue';
+import type { FormSubmitEvent } from '@nuxt/ui';
+import { onMounted, reactive, ref } from 'vue';
 import z from 'zod';
 
 const clients = useClientStore()
 
 
 onMounted(async () => {
-    await clients.readClients(1)
+    await clients.readClients(2)
 })
 
 const schema = z.object({
@@ -24,6 +25,8 @@ const schema = z.object({
 
 type Schmea = z.infer<typeof schema>
 
+
+const emailExists = ref<string | null>(null)
 const state = reactive<Partial<Schmea>>({
     companyName: undefined,
     contactPerson: undefined,
@@ -34,6 +37,16 @@ const state = reactive<Partial<Schmea>>({
     addressZip: undefined,
     addressCountry: undefined,
 })
+
+async function onSubmit(payload: FormSubmitEvent<Schmea>) {
+    const error = await clients.createClient<Schmea>(payload.data)
+    if (error) {
+
+        emailExists.value = error as string
+        return
+    }
+
+}
 </script>
 
 <template>
@@ -42,7 +55,8 @@ const state = reactive<Partial<Schmea>>({
             <UButton icon="i-lucide-plus">Add Client</UButton>
 
             <template #body>
-                <UForm :schema :state>
+                <UForm @submit="onSubmit" :schema :state>
+                    {{ emailExists }}
                     <div class="grid grid-cols-2 grid-flow-row gap-5">
                         <UFormField label="Company name" name="companyName">
                             <UInput v-model="state.companyName" placeholder="Name of the company" />

@@ -1,4 +1,5 @@
 import { useAxios } from "@/axios/axios";
+import type { AxiosError } from "axios";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
@@ -26,7 +27,7 @@ type Clients = {
   };
 };
 export const useClientStore = defineStore("client", () => {
-  const clients = ref<Clients | null>(null);
+  const clients = ref<Clients>();
 
   async function readClients(page: number) {
     try {
@@ -36,5 +37,40 @@ export const useClientStore = defineStore("client", () => {
       console.log(error);
     }
   }
-  return { clients, readClients };
+
+  async function createClient<T>(payload: T) {
+    try {
+      const { data, status } = await useAxios.post("/clients", payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!clients.value?.record) return;
+
+      const meta = clients.value.meta;
+      const curretRecord = clients.value.record;
+      const limit = meta.limit;
+
+      if (meta.currentPage === 1) {
+        clients.value.record = [data, ...curretRecord];
+
+        if (clients.value.record.length > limit) {
+          clients.value.record.pop();
+        }
+
+        meta.totalRecord += 1;
+
+        meta.totalPages = Math.ceil(meta.totalRecord / limit);
+
+        meta.recordsOnPage = clients.value.record.length;
+      }
+      return false;
+    } catch (error) {
+      const responseError = (error as AxiosError).response?.data;
+      console.log(responseError);
+      return responseError as string;
+    }
+  }
+  return { clients, readClients, createClient };
 });
