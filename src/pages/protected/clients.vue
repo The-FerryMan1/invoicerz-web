@@ -1,15 +1,20 @@
 <script setup lang="ts">
+import type clientTableVue from '@/components/clientTable.vue';
 import dashboardWrapper from '@/components/dashboardWrapper.vue';
-import { useClientStore } from '@/stores/clients';
-import type { FormSubmitEvent } from '@nuxt/ui';
-import { onMounted, reactive, ref } from 'vue';
+import { useClientStore, type Record } from '@/stores/clients';
+import type { FormSubmitEvent, TableColumn } from '@nuxt/ui';
+import { computed, onMounted, reactive, ref, } from 'vue';
+import { useRoute } from 'vue-router';
 import z from 'zod';
 
-const clients = useClientStore()
 
+
+const clients = useClientStore()
+const route = useRoute()
+const open = ref<boolean>(false)
 
 onMounted(async () => {
-    await clients.readClients(2)
+    await clients.readClients(Number(route.query.page) || 1)
 })
 
 const schema = z.object({
@@ -39,63 +44,80 @@ const state = reactive<Partial<Schmea>>({
 })
 
 async function onSubmit(payload: FormSubmitEvent<Schmea>) {
+
+
     const error = await clients.createClient<Schmea>(payload.data)
     if (error) {
-
         emailExists.value = error as string
         return
     }
 
+    open.value = !open.value
+
 }
+
+
 </script>
 
 <template>
     <dashboardWrapper title="Clients">
-        <UModal title="Add new client">
-            <UButton icon="i-lucide-plus">Add Client</UButton>
+        <div class="flex justify-end items-center">
+            <UModal v-model:open="open" title="Add new client">
+                <UButton icon="i-lucide-plus">Add Client</UButton>
 
-            <template #body>
-                <UForm @submit="onSubmit" :schema :state>
-                    {{ emailExists }}
-                    <div class="grid grid-cols-2 grid-flow-row gap-5">
-                        <UFormField label="Company name" name="companyName">
-                            <UInput v-model="state.companyName" placeholder="Name of the company" />
-                        </UFormField>
-                        <UFormField label="Contact person" name="contactPerson">
-                            <UInput v-model="state.contactPerson" placeholder="Contact person" />
-                        </UFormField>
-                        <UFormField label="Email" name="email">
-                            <UInput v-model="state.email" placeholder="Enter Valid email" />
-                        </UFormField>
-                        <UFormField label="Phone" name="phone">
-                            <UInput v-model="state.phone" placeholder="Enter phone number" />
-                        </UFormField>
-                        <UFormField label="Street" name="addressStreet">
-                            <UInput v-model="state.addressStreet" placeholder="Enter Street Address" />
-                        </UFormField>
-                        <UFormField label="City" name="addressCity">
-                            <UInput v-model="state.addressCity" placeholder="Enter City " />
-                        </UFormField>
-                        <UFormField label="Zip" name="addressZip">
-                            <UInput v-model="state.addressZip" placeholder="Enter Zip" />
-                        </UFormField>
-                        <UFormField label="County" name="addressCountry">
-                            <UInput v-model="state.addressCountry" placeholder="Enter Country" />
-                        </UFormField>
-                    </div>
+                <template #body="{ close }">
+                    <UForm @submit="onSubmit" :schema :state>
 
-                    <div class="mt-5 flex gap-3 justify-end ">
-                        <UButton type="submit">Submit</UButton>
-                        <UButton color="neutral">Close</UButton>
-                    </div>
+                        <div class="grid grid-cols-2 grid-flow-row gap-5">
+                            <UFormField label="Company name" name="companyName" :required="true">
+                                <UInput icon="i-lucide-building" v-model="state.companyName"
+                                    placeholder="Name of the company" />
+                            </UFormField>
+                            <UFormField label="Contact person" name="contactPerson" :required="true">
+                                <UInput icon="i-lucide-user" v-model="state.contactPerson"
+                                    placeholder="Contact person" />
+                            </UFormField>
+                            <UFormField label="Email" name="email" :required="true">
+                                <UInput icon="i-lucide-mail" v-model="state.email" placeholder="Enter Valid email"
+                                    :class="{ 'border border-red-500 rounded-md': emailExists }" />
+                                <span v-if="emailExists" class="text-red-500 p-2">{{ emailExists }}</span>
+                            </UFormField>
+                            <UFormField label="Phone" name="phone" :required="true">
+                                <UInput icon="i-lucide-phone" v-model="state.phone" placeholder="Enter phone number" />
+                            </UFormField>
+                            <UFormField label="Street" name="addressStreet" :required="true">
+                                <UInput icon="i-lucide-signpost" v-model="state.addressStreet"
+                                    placeholder="Enter Street Address" />
+                            </UFormField>
+                            <UFormField label="City" name="addressCity" :required="true">
+                                <UInput icon="i-lucide-building-2" v-model="state.addressCity"
+                                    placeholder="Enter City " />
+                            </UFormField>
+                            <UFormField label="Zip" name="addressZip" :required="true">
+                                <UInput icon="i-lucide-binary" v-model="state.addressZip" placeholder="Enter Zip" />
+                            </UFormField>
+                            <UFormField label="County" name="addressCountry" :required="true">
+                                <UInput icon="i-lucide-globe" v-model="state.addressCountry"
+                                    placeholder="Enter Country" />
+                            </UFormField>
+                        </div>
 
-                </UForm>
-            </template>
+                        <div class="mt-5 flex gap-3 justify-end ">
+                            <UButton type="submit">Submit</UButton>
+                            <UButton label="Open" color="neutral" variant="subtle" @click="close">Close</UButton>
+                        </div>
 
-        </UModal>
+                    </UForm>
+                </template>
+
+            </UModal>
+        </div>
 
 
-        <div v-if="clients.clients">{{ clients.clients.record }}</div>
-        <div v-if="clients.clients?.meta">{{ clients.clients?.meta }}</div>
+        <ClientTable />
+
+
+
+
     </dashboardWrapper>
 </template>

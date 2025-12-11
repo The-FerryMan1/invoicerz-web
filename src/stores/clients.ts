@@ -3,7 +3,7 @@ import type { AxiosError } from "axios";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
-type Record = {
+export type Record = {
   id: number;
   userID: string;
   companyName: string;
@@ -16,7 +16,7 @@ type Record = {
   addressCountry: string;
 };
 
-type Clients = {
+export type Clients = {
   record: Record[];
   meta: {
     limit: number;
