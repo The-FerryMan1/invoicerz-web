@@ -114,7 +114,7 @@ async function onSubmit(payload: FormSubmitEvent<Schmea>) {
         </div>
 
 
-        <ClientTable />
+        <ClientTable :data="state" />
 
 
 

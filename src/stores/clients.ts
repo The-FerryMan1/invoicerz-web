@@ -46,7 +46,7 @@ export const useClientStore = defineStore("client", () => {
         },
       });
 
-      if (!clients.value?.record) return;
+      if (!clients.value?.record && !clients.value?.record) return;
 
       const meta = clients.value.meta;
       const curretRecord = clients.value.record;
@@ -72,5 +72,55 @@ export const useClientStore = defineStore("client", () => {
       return responseError as string;
     }
   }
-  return { clients, readClients, createClient };
+
+  async function updateClient<T>(id: number, payload: T) {
+    try {
+      const { data, status } = await useAxios.put(`/clients/${id}`, payload);
+
+      const updatedData = data as Record;
+
+      if (!clients.value?.record) return;
+
+      const currentRecord = clients.value.record as Record[];
+
+      const updatedIndex = currentRecord.findIndex((client) => client.id === id);
+
+      if (updatedIndex !== -1) {
+        currentRecord[updatedIndex] = updatedData;
+      }
+
+      return false;
+    } catch (error) {
+      console.log(error);
+      return true;
+    }
+  }
+
+  async function deleteClient(id: number) {
+    try {
+      const { data, status } = await useAxios.delete(`/clients/${id}`);
+      console.log(status);
+
+      if (!clients.value?.record && !clients.value?.record) return;
+
+      const meta = clients.value?.meta;
+      const currentRecord = clients.value?.record as Record[];
+      const limit = meta?.limit;
+
+      const deletedIndex = currentRecord?.findIndex((client) => client.id === id);
+
+      if (deletedIndex !== -1) {
+        currentRecord.splice(deletedIndex, 1);
+
+        meta.totalRecord -= 1;
+        meta.totalPages = Math.ceil(meta.totalRecord / limit);
+        meta.recordsOnPage = currentRecord.length;
+      }
+
+      return;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  return { clients, readClients, createClient, deleteClient, updateClient };
 });
