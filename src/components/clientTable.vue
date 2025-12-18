@@ -2,7 +2,7 @@
 import type { TableColumn } from '@nuxt/ui';
 import { type Record, useClientStore } from '@/stores/clients';
 import { storeToRefs } from 'pinia';
-import { ref, watch, resolveComponent, h } from 'vue';
+import { ref, watch, resolveComponent, h, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import type { Row } from '@tanstack/vue-table'
 import { useClipboard } from '@vueuse/core'
@@ -155,14 +155,16 @@ const page = ref(Number(route.query.page))
 function to(page: number) {
     return {
         query: {
-            page
+            page,
+            ...route.query
         },
     }
 }
 
 watch(page, async () => {
-    await client.readClients(page.value || Number(route.query.page))
+    await client.readClients(route.query)
 })
+
 
 </script>
 

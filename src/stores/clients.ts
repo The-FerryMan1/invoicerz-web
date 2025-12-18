@@ -1,7 +1,9 @@
 import { useAxios } from "@/axios/axios";
+import { csvLinkDownload } from "@/util/csvLink";
 import type { AxiosError } from "axios";
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import type { LocationQuery } from "vue-router";
 
 export type Record = {
   id: number;
@@ -29,9 +31,9 @@ export type Clients = {
 export const useClientStore = defineStore("client", () => {
   const clients = ref<Clients>();
 
-  async function readClients(page: number) {
+  async function readClients(query: LocationQuery) {
     try {
-      const { data, status } = await useAxios.get(`/clients?page=${page}&limit=10`);
+      const { data, status } = await useAxios.get(`/clients?page=${query.page??'1'}&search=${query.search??''}&limit=10`);
       clients.value = data;
     } catch (error) {
       console.log(error);
@@ -122,5 +124,20 @@ export const useClientStore = defineStore("client", () => {
       console.log(error);
     }
   }
-  return { clients, readClients, createClient, deleteClient, updateClient };
+
+
+  async function getCSV() {
+      try {
+        const {data} = await useAxios.get('/clients/export',{
+          responseType: 'blob'
+        })
+        csvLinkDownload(data, 'clients')
+        return false
+      } catch (error) {
+        console.log(error)
+        return true
+        
+      }
+  }
+  return { clients, readClients, createClient, deleteClient, updateClient,getCSV };
 });
