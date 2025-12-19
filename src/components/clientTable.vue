@@ -150,7 +150,7 @@ function getRowItems(row: Row<Record>) {
     ]
 }
 
-const page = ref(Number(route.query.page))
+const page = ref(Number(route.query.page) || 1)
 
 function to(page: number) {
     return {
