@@ -32,6 +32,7 @@ export const useProductServices = defineStore('product_services', ()=>{
     async function getProductServices(query: {}) {
         try {
             loading.value = true
+            console.log(query)
             const {data} = await useAxios.get('/productService', {params: query})
             productsServices.value = data
         } catch (error) {
@@ -41,9 +42,14 @@ export const useProductServices = defineStore('product_services', ()=>{
         }
     }
 
+    async function getCSV() {
+        console.log("get csv")
+    }
+
     return {
         productsServices,
         loading,
-        getProductServices
+        getProductServices,
+        getCSV
     }
 })
