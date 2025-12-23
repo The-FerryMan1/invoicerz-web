@@ -42,6 +42,39 @@ export const useProductServices = defineStore('product_services', ()=>{
         }
     }
 
+    async function createProductService(formdata:Record<string, any>): Promise<boolean> {
+        try {
+            loading.value = true
+            const {data} = await useAxios.post('/productService', formdata)
+
+            if(!productsServices.value?.record) return true
+
+            const meta = productsServices.value.meta
+            const currentRecord = productsServices.value.record
+            const limit = meta.limit
+
+            if (meta.currentPage === 1) {
+        productsServices.value.record = [data, ...currentRecord];
+
+        if (productsServices.value.record.length > limit) {
+          productsServices.value.record.pop();
+        }
+
+        meta.totalRecord += 1;
+
+        meta.totalPages = Math.ceil(meta.totalRecord / limit);
+
+        meta.recordsOnPage = productsServices.value.record.length;
+      }
+
+            return false
+        } catch (error) {
+            return true
+        }finally{
+            loading.value = false
+        }
+    }
+
     async function getCSV() {
         console.log("get csv")
     }
@@ -50,6 +83,7 @@ export const useProductServices = defineStore('product_services', ()=>{
         productsServices,
         loading,
         getProductServices,
-        getCSV
+        getCSV,
+        createProductService
     }
 })
