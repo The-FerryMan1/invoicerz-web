@@ -44,7 +44,7 @@ async function onSubmit(payload: FormSubmitEvent<T>) {
 <template>
     <UModal :close="{onClick: ()=> emit('close', false)}" :title="props.title">
         <template #body="{close}">
-            <UForm v-if="props.form" @submit="onSubmit" :schema="props.schema" :state="state">
+            <UForm  v-if="props.form" @submit="onSubmit" :schema="props.schema" :state="state" class="w-full space-y-4">
                 <UFormField 
                     v-for="field in fields"
                     :key="field.name"
@@ -52,11 +52,15 @@ async function onSubmit(payload: FormSubmitEvent<T>) {
                     :name="field.name"
                     :required="field.required"
                 >
-                    <UInput
+                    <UCheckbox v-if="field.type === 'checkbox'"  v-model="state[field.name]"  :icon="field.icon"
+                        :placeholder="field.placeholder"
+                    />
+                    <UInput v-else
                         v-model="state[field.name]"
                         :icon="field.icon"
                         :placeholder="field.placeholder"
                         :type="field.type"
+                        class="w-full"
                         :class="{ 'border border-red-500 rounded-md': field.name === 'email' && localError }"
                        
                     />
