@@ -88,6 +88,15 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/items",
+    name: "items",
+    component: () => import("@/pages/protected/items.vue"),
+    meta: {
+      title: "Items",
+      isRequiresAuth: true,
+    },
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: "notFound",
     component: () => import("@/error.vue"),
