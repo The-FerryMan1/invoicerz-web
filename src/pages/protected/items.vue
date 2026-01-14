@@ -38,11 +38,6 @@ const columns: TableColumn<LineRecord>[] = [
     header: "#",
     cell: ({ row }) => `#${row.getValue("id")}`,
   },
-  {
-    accessorKey: "name",
-    header: "Name",
-    cell: ({ row }) => `${row.getValue("name")}`,
-  },
    {
     accessorKey: "invoiceID",
     header: "Invoice ID",
@@ -197,7 +192,7 @@ const clientschema = z.object({
 
 type Schema = z.infer<typeof clientschema>;
 
-const invoiveItems = computed(()=>invoice.invoicePaganition?.record.map((item)=> item.id))
+const invoiveItems = computed(()=>invoice.invoices?.record.map((item)=> item.id))
 const productServiceItems = computed(()=>productService.productsServices?.record.map((item)=> item.id))
 
 onMounted(async()=>{

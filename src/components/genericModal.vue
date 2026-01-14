@@ -55,6 +55,14 @@ const findTextType = computed(() => {
 const findCheckboxType = computed(() => {
   return props.fields.filter((field) => field.type === "checkbox");
 });
+
+const findDateType = computed(() => {
+  return props.fields.filter((field) => field.type === "date");
+});
+
+const findTextAreaType = computed(() => {
+  return props.fields.filter((field) => field.type === "textarea");
+});
 </script>
 
 <template>
@@ -84,6 +92,42 @@ const findCheckboxType = computed(() => {
             class="w-full"
           />
         </UFormField>
+
+        <UFormField
+          v-for="field in findDateType"
+          :key="field.name"
+          :label="field.label"
+          :name="field.name"
+          :required="field.required"
+        >
+          <UInput
+            v-if="field.type === 'date'"
+            v-model="state[field.name]"
+            :icon="field.icon"
+            :placeholder="field.placeholder"
+            :type="field.type"
+            class="w-full"
+            :class="{ 'border border-red-500 rounded-md': field.name === 'email' && localError }"
+          />
+        </UFormField>
+
+        <UFormField
+          v-for="field in findTextAreaType"
+          :key="field.name"
+          :label="field.label"
+          :name="field.name"
+          :required="field.required"
+        >
+          <UTextarea
+            v-if="field.type === 'textarea'"
+            v-model="state[field.name]"
+            :icon="field.icon"
+            :placeholder="field.placeholder"
+            class="w-full"
+            :class="{ 'border border-red-500 rounded-md': field.name === 'email' && localError }"
+          />
+        </UFormField>
+
 
         <UFormField
           v-for="field in findCheckboxType"
