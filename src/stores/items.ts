@@ -11,8 +11,8 @@ productServiceID: number;
 description: string
 quantity: number,
 unitPrice: number
- lineTotal: number
- createdAt: Date;
+lineTotal: number
+createdAt: Date;
 updatedAt: Date | null;
 };
 
